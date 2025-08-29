@@ -7,5 +7,7 @@ export interface Course {
 }
 
 export interface CoursesState {
-  items: Course[]
+  courses: Course[],
+  status: string,
+  error: string,
 }
