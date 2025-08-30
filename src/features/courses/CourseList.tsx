@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import  { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../hooks";
 import Spinner from "../../components/UI/Spinner";
 import ErrorMessage from "../../components/UI/ErrorMessage";
@@ -6,7 +6,7 @@ import { getCourses } from "./coursesSlice";
 import CourseCard from "./CourseCard";
 
 
-const CourseList: React.FC = () => {
+function CourseList() {
   const { courses, status, error } = useAppSelector(
     (state) => state.courses
   );
@@ -28,7 +28,7 @@ const CourseList: React.FC = () => {
   return (
     <div className="p-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {courses.map((course) => (
-        <CourseCard course={course} />
+        <CourseCard key={course.id} course={course} />
       ))}
 
     </div>
