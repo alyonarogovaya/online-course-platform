@@ -1,4 +1,4 @@
-import type { Course } from "./types";
+import type { Course, PurchaseResult } from "./types";
 
 const mockCourses: Course[] = [
   {
@@ -94,4 +94,16 @@ const mockCourses: Course[] = [
 
 export function fetchCourses(): Promise<Course[]> {
   return new Promise((resolve) => setTimeout(() => resolve(mockCourses), 600));
+}
+
+export function handlePurchase(courseId: string): Promise<PurchaseResult> {
+  return new Promise((resolve, reject) =>
+    setTimeout(() => {
+      if (Math.random() < 0.8) {
+        resolve({ status: "fulfilled", courseId });
+      } else {
+        reject(new Error("There was an error purchasing the course. Try again later."));
+      }
+    }, 900)
+  );
 }
