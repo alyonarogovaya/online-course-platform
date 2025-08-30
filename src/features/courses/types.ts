@@ -13,6 +13,12 @@ export interface CoursesState {
   purchasedIds: string[];
   purchasingStatus: Record<string, "idle" | "loading" | "fulfilled" | "rejected">;
   purchaseError: Record<string, string>; 
+  currentVideo: {
+    courseId: string | null,
+    isOpen: boolean,
+    isPlaying: boolean,
+    currentTime: number,
+  },
 }
 
 export interface PurchaseResult {

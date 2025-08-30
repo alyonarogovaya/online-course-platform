@@ -4,6 +4,7 @@ import { useAppDispatch } from "../../hooks";
 import type { RootState } from "../../store";
 import { purchaseCourse } from "./coursesSlice";
 import { TiTick } from "react-icons/ti";
+import ErrorMessage from "../../components/UI/ErrorMessage";
 
 interface PurchaseButtonProps {
   courseId: string;
@@ -47,7 +48,7 @@ export const PurchaseButton: React.FC<PurchaseButtonProps> = ({ courseId }) => {
           ? "Retry Purchase"
           : "Buy Course"}
       </button>
-      {error && <span className="text-red-600 text-sm mt-1">{error}</span>}
+      {error && <ErrorMessage>{error}</ErrorMessage>}
     </div>
   );
 };

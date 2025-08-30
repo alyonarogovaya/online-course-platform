@@ -47,12 +47,37 @@ const initialState: CoursesState = {
   purchasedIds: [],
   purchasingStatus: {},
   purchaseError: {},
+  currentVideo: {
+    courseId: null,
+    isOpen: false,
+    isPlaying: false,
+    currentTime: 0,
+  },
 };
 
 const coursesSlice = createSlice({
   name: "courses",
   initialState,
-  reducers: {},
+  reducers: {
+    openVideo(state, action: PayloadAction<string>) {
+      state.currentVideo = {
+        courseId: action.payload,
+        isOpen: true,
+        isPlaying: false,
+        currentTime: 0,
+      };
+    },
+    closeVideo(state) {
+      state.currentVideo.isOpen = false;
+      state.currentVideo.isPlaying = false;
+    },
+    setPlaying(state, action: PayloadAction<boolean>) {
+      state.currentVideo.isPlaying = action.payload;
+    },
+    setCurrentTime(state, action: PayloadAction<number>) {
+      state.currentVideo.currentTime = action.payload;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(getCourses.pending, (state) => {
@@ -73,7 +98,7 @@ const coursesSlice = createSlice({
       .addCase(purchaseCourse.pending, (state, action) => {
         const id = (action.meta.arg as { courseId: string }).courseId;
         state.purchasingStatus[id] = "loading";
-        state.purchaseError[id] = ""; 
+        state.purchaseError[id] = "";
       })
       .addCase(
         purchaseCourse.fulfilled,
@@ -93,5 +118,5 @@ const coursesSlice = createSlice({
       });
   },
 });
-
+export const { openVideo, closeVideo, setPlaying, setCurrentTime } = coursesSlice.actions;
 export default coursesSlice.reducer;

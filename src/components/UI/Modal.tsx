@@ -52,15 +52,19 @@ type ClickableElement = ReactElement<ButtonHTMLAttributes<HTMLButtonElement>>;
 type OpenProps = {
   children: ClickableElement;
   opens: string;
+  onOpen?: () => void;
 };
 
-function Open({ children, opens }: OpenProps) {
+function Open({ children, opens, onOpen }: OpenProps) {
   const ctx = useContext(ModalContext);
   if (!ctx) throw new Error("Modal.Open must be used within Modal");
   const { open } = ctx;
 
   return cloneElement(children, {
-    onClick: () => open(opens),
+    onClick: () => { 
+      open(opens); 
+      onOpen?.(); 
+    },
   });
 }
 
@@ -71,13 +75,17 @@ type WindowChildProps = {
 type WindowProps = {
   children: ReactElement<WindowChildProps>;
   name: string;
+  onCloseModal?: () => void;
 };
 
-function Window({ children, name }: WindowProps) {
+function Window({ children, name, onCloseModal }: WindowProps) {
   const ctx = useContext(ModalContext);
   if (!ctx) throw new Error("Modal.Window must be used within Modal");
   const { openName, close } = ctx;
-  const ref = useOutsideClick<HTMLDivElement>(close);
+  const ref = useOutsideClick<HTMLDivElement>(() => {
+    close();
+    onCloseModal?.();
+  });
 
   if (name !== openName) return null;
 
