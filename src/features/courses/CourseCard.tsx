@@ -2,8 +2,10 @@ import type { JSX } from "react"
 import type { Course } from "./types"
 import Modal from "../../components/UI/Modal";
 import { PurchaseButton } from "./PurchaseButton";
-import { useAppDispatch } from "../../hooks";
-import { closeVideo, openVideo, setCurrentTime, setPlaying } from "./coursesSlice";
+import { useAppDispatch, useAppSelector } from "../../hooks";
+import { closeVideo, openVideo } from "./coursesSlice";
+import { CourseVideo } from "./CourseVideo";
+import Spinner from "../../components/UI/Spinner";
 
 interface CourseCardProps {
   course: Course;
@@ -11,12 +13,17 @@ interface CourseCardProps {
 
 function CourseCard({ course }: CourseCardProps): JSX.Element {
   const { id, title, description, price, videoUrl } = course;
+  const { user, status } = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
+
+  const handleCloseModal = () => {
+    dispatch(closeVideo());
+  };
 
   return <Modal>
     <Modal.Open opens={`course-${id}`} onOpen={() => dispatch(openVideo(id))}>
       <div
-        className="bg-white shadow-md rounded-xl p-4 flex flex-col justify-between relative"
+        className="bg-white shadow-md rounded-xl p-4 flex flex-col justify-between relative cursor-pointer hover:shadow-lg"
       >
         <div className="flex flex-col gap-2">
           <h2 className="text-lg font-bold cursor-pointer line-clamp-2">{title}</h2>
@@ -25,22 +32,18 @@ function CourseCard({ course }: CourseCardProps): JSX.Element {
 
         <div className="flex flex-wrap items-end justify-between mt-6 gap-2">
           <span className="font-semibold">${price}</span>
-          <PurchaseButton courseId={id} />
+          {status === "loading" ? (
+            <Spinner />
+          ) : user ? (
+            <PurchaseButton courseId={id} />
+          ) : (
+            <span className="text-blue-500">Login to buy a course</span>
+          )}
         </div>
       </div>
     </Modal.Open>
-    <Modal.Window name={`course-${id}`} onCloseModal={() => dispatch(closeVideo())}>
-      <div className="flex flex-col gap-4 min-h-[378px]">
-        <video
-          src={videoUrl}
-          controls
-          autoPlay
-          className="rounded-lg shadow-lg max-h-[70vh]  min-h-[378px]"
-          onPlay={() => dispatch(setPlaying(true))}
-          onPause={() => dispatch(setPlaying(false))}
-          onTimeUpdate={(e) => dispatch(setCurrentTime(e.currentTarget.currentTime))}
-        />
-      </div>
+    <Modal.Window name={`course-${id}`} onCloseModal={handleCloseModal}>
+      <CourseVideo videoUrl={videoUrl} />
     </Modal.Window>
   </Modal>
 }

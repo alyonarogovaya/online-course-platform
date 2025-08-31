@@ -99,7 +99,7 @@ function Window({ children, name, onCloseModal }: WindowProps) {
         <button
           onClick={close}
           className="absolute top-4 right-5 p-1 rounded-md transition 
-                     hover:bg-gray-100"
+                     hover:bg-gray-100 cursor-pointer"
         >
           <HiXMark className="w-6 h-6 text-gray-500" />
         </button>
