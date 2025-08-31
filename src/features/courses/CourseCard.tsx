@@ -43,7 +43,11 @@ function CourseCard({ course }: CourseCardProps): JSX.Element {
       </div>
     </Modal.Open>
     <Modal.Window name={`course-${id}`} onCloseModal={handleCloseModal}>
-      <CourseVideo videoUrl={videoUrl} />
+      <div>
+        <CourseVideo videoUrl={videoUrl} />
+        <h2 className="text-lg font-bold cursor-pointer mt-4">{title}</h2>
+        <p className="text-gray-600 mt-1">{description}</p>
+      </div>
     </Modal.Window>
   </Modal>
 }

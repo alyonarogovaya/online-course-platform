@@ -3,6 +3,7 @@ import { Outlet } from "react-router-dom";
 import Header from "./components/UI/Header";
 import { useAppDispatch } from "./hooks";
 import { hydrate } from "./features/auth/authSlice";
+import { ToastContainer } from "react-toastify";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -20,6 +21,13 @@ function App() {
       <main className="mx-auto max-w-6xl p-4 h-full">
         <Outlet />
       </main>
+      <ToastContainer position="top-center" 
+        autoClose={3000}  
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        pauseOnFocusLoss
+        pauseOnHover />
     </div>
   );
 }
