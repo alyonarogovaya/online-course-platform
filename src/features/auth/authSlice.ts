@@ -1,4 +1,8 @@
-import { createAsyncThunk, createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import {
+  createAsyncThunk,
+  createSlice,
+  type PayloadAction,
+} from "@reduxjs/toolkit";
 import type { AuthState, User } from "./types";
 import { validateEmail, validatePassword } from "./validators";
 
@@ -16,10 +20,7 @@ export const submitAuth = createAsyncThunk<
   const { email, password } = payload;
 
   if (!validateEmail(email)) return rejectWithValue("Invalid email");
-  if (!validatePassword(password))
-    return rejectWithValue(
-      "Invalid password"
-    );
+  if (!validatePassword(password)) return rejectWithValue("Invalid password");
 
   await new Promise((res) => setTimeout(res, 500));
 
@@ -31,6 +32,11 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     logout(state) {
+      if (state.user) {
+        const key = `purchased_${state.user.email}`;
+        localStorage.removeItem(key);
+      }
+
       state.user = null;
       localStorage.removeItem("user");
     },

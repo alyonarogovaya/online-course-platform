@@ -1,7 +1,5 @@
 import React from "react";
-import { useSelector } from "react-redux";
-import { useAppDispatch } from "../../hooks";
-import type { RootState } from "../../store";
+import { useAppDispatch, useAppSelector } from "../../hooks";
 import { purchaseCourse } from "./coursesSlice";
 import { TiTick } from "react-icons/ti";
 import ErrorMessage from "../../components/UI/ErrorMessage";
@@ -12,14 +10,15 @@ interface PurchaseButtonProps {
 }
 
 export const PurchaseButton: React.FC<PurchaseButtonProps> = ({ courseId }) => {
+  const purchasedIds = useAppSelector((state) => state.courses.purchasedIds);
+  const user = useAppSelector((state) => state.auth.user);
+  const purchasingStatus = useAppSelector(
+    (state) => state.courses.purchasingStatus
+  );
+  const purchaseError = useAppSelector(
+    (state) => state.courses.purchaseError
+  );
   const dispatch = useAppDispatch();
-  const purchasedIds = useSelector((state: RootState) => state.courses.purchasedIds);
-  const purchasingStatus = useSelector(
-    (state: RootState) => state.courses.purchasingStatus
-  );
-  const purchaseError = useSelector(
-    (state: RootState) => state.courses.purchaseError
-  );
 
   const status = purchasingStatus[courseId] || "idle";
   const error = purchaseError[courseId];
@@ -27,8 +26,8 @@ export const PurchaseButton: React.FC<PurchaseButtonProps> = ({ courseId }) => {
 
   const onPurchase = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    if (status !== "loading") {
-      const resultAction = await dispatch(purchaseCourse({ courseId }));
+    if (status !== "loading" && user) {
+      const resultAction = await dispatch(purchaseCourse({ courseId, userEmail: user.email }));
 
       if (purchaseCourse.fulfilled.match(resultAction)) {
         toast.success("Course purchased successfully!");

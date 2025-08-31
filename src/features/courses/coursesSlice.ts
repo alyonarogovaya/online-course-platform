@@ -16,11 +16,17 @@ export const getCourses = createAsyncThunk(
 
 export const purchaseCourse = createAsyncThunk<
   string,
-  { courseId: string },
+  { courseId: string; userEmail: string },
   { rejectValue: string }
->("courses/purchase", async ({ courseId }, { rejectWithValue }) => {
+>("courses/purchase", async ({ courseId, userEmail }, { rejectWithValue }) => {
   try {
     const res = await handlePurchase(courseId);
+
+    const key = `purchased_${userEmail}`;
+    const stored: string[] = JSON.parse(localStorage.getItem(key) || "[]");
+    if (!stored.includes(courseId)) stored.push(courseId);
+    localStorage.setItem(key, JSON.stringify(stored));
+
     return res.courseId;
   } catch (error: unknown) {
     let errorMessage = "Failed to purchase course.";
@@ -40,11 +46,18 @@ export const purchaseCourse = createAsyncThunk<
   }
 });
 
+const getInitialPurchases = (): string[] => {
+  const user = JSON.parse(localStorage.getItem("user") || "null");
+  if (!user) return [];
+  const key = `purchased_${user.email}`;
+  return JSON.parse(localStorage.getItem(key) || "[]");
+};
+
 const initialState: CoursesState = {
   courses: [],
   status: "idle",
   error: "",
-  purchasedIds: [],
+  purchasedIds: getInitialPurchases(),
   purchasingStatus: {},
   purchaseError: {},
   currentVideo: {
@@ -76,6 +89,11 @@ const coursesSlice = createSlice({
     },
     setCurrentTime(state, action: PayloadAction<number>) {
       state.currentVideo.currentTime = action.payload;
+    },
+    clearPurchases(state) {
+      state.purchasedIds = [];
+      state.purchasingStatus = {};
+      state.purchaseError = {};
     },
   },
   extraReducers: (builder) => {
@@ -115,8 +133,14 @@ const coursesSlice = createSlice({
         state.purchaseError[id] =
           (action.payload as string) ??
           "There was an error purchasing the course. Try again later.";
-      });
+      })
   },
 });
-export const { openVideo, closeVideo, setPlaying, setCurrentTime } = coursesSlice.actions;
+export const {
+  openVideo,
+  closeVideo,
+  setPlaying,
+  setCurrentTime,
+  clearPurchases,
+} = coursesSlice.actions;
 export default coursesSlice.reducer;
